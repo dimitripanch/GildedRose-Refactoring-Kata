@@ -50,6 +50,46 @@ class GildedRoseTest(unittest.TestCase):
         item = self.update_once("Aged Brie", 0, 10)
         self.assertEqual(12, item.quality)
         self.assertEqual(-1, item.sell_in)
-        
+
+    def test_enchanted_degrades_by_1_before_sell_date(self):
+        item = self.update_once("Enchanted Crystal", 5, 20)
+        self.assertEqual(19, item.quality)
+        self.assertEqual(4, item.sell_in)
+
+    def test_enchanted_degrades_by_2_after_sell_date(self):
+        item = self.update_once("Enchanted Crystal", 0, 20)
+        self.assertEqual(18, item.quality)
+        self.assertEqual(-1, item.sell_in)
+
+    def test_enchanted_never_degrades_below_10(self):
+        item = self.update_once("Enchanted Crystal", 5, 10)
+        self.assertEqual(10, item.quality)
+        self.assertEqual(4, item.sell_in)
+
+    def test_enchanted_never_degrades_below_10_after_sell_date(self):
+        item = self.update_once("Enchanted Crystal", 0, 11)
+        self.assertEqual(10, item.quality)
+        self.assertEqual(-1, item.sell_in)
+
+    def test_fragile_degrades_by_3_before_sell_date(self):
+        item = self.update_once("Fragile Glass Vial", 5, 20)
+        self.assertEqual(17, item.quality)
+        self.assertEqual(4, item.sell_in)
+
+    def test_fragile_degrades_by_6_after_sell_date(self):
+        item = self.update_once("Fragile Glass Vial", 0, 20)
+        self.assertEqual(14, item.quality)
+        self.assertEqual(-1, item.sell_in)
+
+    def test_fragile_quality_floors_at_zero(self):
+        item = self.update_once("Fragile Glass Vial", 5, 2)
+        self.assertEqual(0, item.quality)
+        self.assertEqual(4, item.sell_in)
+
+    def test_fragile_quality_floors_at_zero_after_sell_date(self):
+        item = self.update_once("Fragile Glass Vial", 0, 4)
+        self.assertEqual(0, item.quality)
+        self.assertEqual(-1, item.sell_in)
+
 if __name__ == '__main__':
     unittest.main()

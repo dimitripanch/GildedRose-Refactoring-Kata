@@ -63,6 +63,25 @@ class BackstageUpdater(ItemUpdater):
         self.decrease_sell_in(item)
 
 
+class EnchantedUpdater(ItemUpdater):
+    QUALITY_FLOOR = 10
+
+    def decrease_quality(self, item, amount=1):
+        item.quality = max(self.QUALITY_FLOOR, item.quality - amount)
+
+    def update(self, item):
+        degrade = 1 if item.sell_in > 0 else 2
+        self.decrease_quality(item, degrade)
+        self.decrease_sell_in(item)
+
+
+class FragileUpdater(ItemUpdater):
+    def update(self, item):
+        degrade = 3 if item.sell_in > 0 else 6
+        self.decrease_quality(item, degrade)
+        self.decrease_sell_in(item)
+
+
 class SulfurasUpdater(ItemUpdater):
     def update(self, item):
         # Legendary item never changes.
@@ -83,6 +102,10 @@ class UpdaterFactory:
             return SulfurasUpdater()
         if item.name.startswith("Conjured"):
             return ConjuredUpdater()
+        if item.name.startswith("Enchanted"):
+            return EnchantedUpdater()
+        if item.name.startswith("Fragile"):
+            return FragileUpdater()
         return NormalUpdater()
 
 
